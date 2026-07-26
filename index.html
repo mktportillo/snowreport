@@ -559,7 +559,7 @@
         <img src="https://skiportillo.com/wp-content/themes/ski-portillo-new/images/logo-top.svg" alt="Ski Portillo Logo">
       </div>
       <div class="header-right">
-        <span class="last-update" id="last-update">Actualizado: 25-07 • 07:00 hrs</span>
+        <span class="last-update" id="last-update">Actualizado: 26-07 • 07:00 hrs</span>
         <div class="header-btn">Reporte de Nieve</div>
       </div>
     </div>
@@ -576,7 +576,7 @@
 
       <div class="date-group">
         <label for="date-end">Hasta:</label>
-        <input type="date" id="date-end" class="date-input" value="2026-07-25">
+        <input type="date" id="date-end" class="date-input" value="2026-07-26">
       </div>
 
       <button class="btn-reset" id="reset-dates-btn">Restablecer Fechas</button>
@@ -790,7 +790,8 @@
       { date: '2026-07-22', label: '22-07-2026', day: 'Miércoles', n24: 25, n7: 433, acum: 495, plateau: 250, base: 239, temp: -3, roadStatus: 'closed', roadDetails: 'Cerrado' },
       { date: '2026-07-23', label: '23-07-2026', day: 'Jueves', n24: 33, n7: 466, acum: 528, plateau: 260, base: 253, temp: -3, roadStatus: 'closed', roadDetails: 'Cerrado' },
       { date: '2026-07-24', label: '24-07-2026', day: 'Viernes', n24: 25, n7: 491, acum: 553, plateau: 265, base: 251, temp: -5, roadStatus: 'closed', roadDetails: 'Cerrado' },
-      { date: '2026-07-25', label: '25-07-2026', day: 'Sábado', n24: 27, n7: 233, acum: 580, plateau: 270, base: 260, temp: -1, roadStatus: 'closed', roadDetails: 'Cerrado' }
+      { date: '2026-07-25', label: '25-07-2026', day: 'Sábado', n24: 27, n7: 233, acum: 580, plateau: 270, base: 260, temp: -1, roadStatus: 'closed', roadDetails: 'Cerrado' },
+      { date: '2026-07-26', label: '26-07-2026', day: 'Domingo', n24: 22, n7: 255, acum: 602, plateau: 270, base: 250, temp: 2, roadStatus: 'closed', roadDetails: 'Cerrado' }
     ];
 
     const inputStart = document.getElementById('date-start');
@@ -1258,7 +1259,7 @@
 
     btnReset.addEventListener('click', () => {
       inputStart.value = '2026-07-11';
-      inputEnd.value = '2026-07-25';
+      inputEnd.value = '2026-07-26';
       updateDashboard();
     });
 
