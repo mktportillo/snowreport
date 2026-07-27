@@ -3,280 +3,768 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard de Nieve & Estado de Ruta - Ski Portillo</title>
-  
-  <!-- FontAwesome & Chart.js -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+  <title>Ski Portillo - Reporte de Nieve</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
   <style>
     :root {
-      --primary-blue: #0f2b48;
-      --accent-gold: #e6a100;
-      --bg-light: #f4f7f6;
+      --portillo-navy: #0b1d3a;
+      --portillo-blue: #1b3d6d;
+      --portillo-yellow: #f8ad1d;
+      --portillo-bg: #f5f7fa;
       --card-bg: #ffffff;
-      --text-main: #2c3e50;
-      --text-muted: #7f8c8d;
-      --status-closed: #e74c3c;
-      --status-open: #2ecc71;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --snow-light: #e0f2fe;
+      --snow-accent: #0369a1;
+      --good-green: #10b981;
+      --warn-orange: #f97316;
+      --alert-red: #ef4444;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background-color: var(--bg-light);
+      font-family: 'Open Sans', sans-serif;
+      background-color: var(--portillo-bg);
       color: var(--text-main);
-      padding: 20px;
+      padding-bottom: 40px;
     }
 
-    .dashboard-container {
+    header {
+      background: linear-gradient(135deg, var(--portillo-navy) 0%, #0f2847 100%);
+      color: #ffffff;
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .header-container {
       max-width: 1200px;
       margin: 0 auto;
-    }
-
-    /* Header */
-    header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: var(--primary-blue);
-      color: white;
-      padding: 20px 30px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
 
-    .header-title h1 {
-      font-size: 1.8rem;
+    .brand-logo img {
+      height: 32px;
+      width: auto;
+      display: block;
+    }
+
+    .header-right {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      font-size: 12px;
     }
 
-    .header-title p {
-      font-size: 0.9rem;
-      opacity: 0.8;
-      margin-top: 4px;
+    .header-btn {
+      background: rgba(248, 173, 29, 0.15);
+      border: 1px solid rgba(248, 173, 29, 0.4);
+      color: var(--portillo-yellow);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
     }
 
     .last-update {
-      background-color: rgba(255,255,255,0.15);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.7);
     }
 
-    /* Controls Bar */
-    .controls-bar {
+    .main-container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+
+    .controls-card {
+      background: var(--portillo-navy);
+      color: #ffffff;
+      border-radius: 12px;
+      padding: 14px 20px;
+      margin-bottom: 24px;
       display: flex;
-      gap: 15px;
-      background: var(--card-bg);
-      padding: 15px 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      align-items: center;
       flex-wrap: wrap;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 4px 12px rgba(11, 29, 58, 0.15);
     }
 
-    .control-group {
+    .date-group {
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .control-group label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
+    .date-group label {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.8);
+      text-transform: uppercase;
+      font-family: 'Montserrat', sans-serif;
     }
 
     .date-input {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
       padding: 8px 12px;
-      border: 1px solid #ccc;
       border-radius: 6px;
-      font-size: 0.9rem;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 13px;
       outline: none;
+      color-scheme: dark;
+    }
+
+    .date-input:focus {
+      border-color: var(--portillo-yellow);
+      background: rgba(255, 255, 255, 0.15);
     }
 
     .btn-reset {
-      background-color: var(--primary-blue);
-      color: white;
-      border: none;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
       padding: 8px 16px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.85rem;
-      transition: background 0.2s;
+      transition: all 0.2s ease;
     }
 
     .btn-reset:hover {
-      background-color: #1a436e;
+      background: var(--portillo-yellow);
+      color: var(--portillo-navy);
+      border-color: var(--portillo-yellow);
     }
 
-    /* KPI Grid */
+    .titles-sec {
+      margin-bottom: 20px;
+    }
+
+    .page-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--portillo-navy);
+      margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* STATUS CARD */
+    .status-card {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .status-card.good { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .status-card.warning { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+    .status-card.alert { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+
+    .status-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .status-main h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .status-main p {
+      font-size: 13px;
+      opacity: 0.95;
+      line-height: 1.5;
+    }
+
+    .status-metrics {
+      display: flex;
+      gap: 16px;
+    }
+
+    .status-metric {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 10px 12px;
+      border-radius: 8px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .status-metric small {
+      display: block;
+      font-size: 11px;
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
+
+    .status-metric strong {
+      font-size: 16px;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .status-content { grid-template-columns: 1fr; }
+      .status-metrics { flex-wrap: wrap; }
+    }
+
+    /* KPI GRID */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-      margin-bottom: 20px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 25px;
     }
 
     .kpi-card {
       background: var(--card-bg);
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       position: relative;
-      overflow: hidden;
     }
 
-    .kpi-card::before {
-      content: '';
+    .kpi-trend {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
-      background-color: var(--accent-gold);
+      top: 12px;
+      right: 12px;
+      font-size: 18px;
+      font-weight: 700;
     }
+
+    .kpi-trend.up { color: var(--good-green); }
+    .kpi-trend.down { color: var(--alert-red); }
+    .kpi-trend.flat { color: var(--text-muted); }
 
     .kpi-title {
-      font-size: 0.8rem;
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
       color: var(--text-muted);
       letter-spacing: 0.5px;
       margin-bottom: 8px;
     }
 
-    .kpi-value {
-      font-size: 1.8rem;
+    .kpi-num {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--portillo-navy);
+      margin-bottom: 6px;
+      line-height: 1;
+    }
+
+    .kpi-unit {
+      font-size: 16px;
       font-weight: 700;
-      color: var(--primary-blue);
+      color: var(--portillo-yellow);
     }
 
-    .kpi-subtext {
-      font-size: 0.75rem;
+    .kpi-sparkline {
+      height: 24px;
+      margin: 8px 0 4px 0;
+      display: block;
+      max-width: 100%;
+    }
+
+    .kpi-foot {
+      font-size: 11px;
       color: var(--text-muted);
-      margin-top: 5px;
+      margin-top: 8px;
     }
 
-    /* Status Card Special Styling */
-    .status-card.closed::before {
-      background-color: var(--status-closed);
-    }
-    .status-card.open::before {
-      background-color: var(--status-open);
-    }
-
-    .status-badge {
+    .kpi-badge {
       display: inline-block;
-      padding: 4px 8px;
+      background: var(--snow-light);
+      color: var(--snow-accent);
+      padding: 3px 8px;
       border-radius: 4px;
-      font-weight: bold;
-      font-size: 0.9rem;
-      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 4px;
     }
-    .status-badge.closed { background-color: var(--status-closed); }
-    .status-badge.open { background-color: var(--status-open); }
 
-    /* Chart Section */
-    .chart-container {
+    .kpi-badge.good { background: #dcfce7; color: #16a34a; }
+    .kpi-badge.warn { background: #fed7aa; color: #b45309; }
+
+    @media (min-width: 768px) {
+      .kpi-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+      .page-title { font-size: 32px; }
+      .brand-logo img { height: 38px; }
+      .kpi-num { font-size: 34px; }
+    }
+
+    /* GRÁFICOS */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    @media (min-width: 768px) {
+      .charts-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .chart-box {
       background: var(--card-bg);
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .chart-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--portillo-navy);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chart-icon {
+      font-size: 16px;
+    }
+
+    .chart-container {
       position: relative;
-      height: 450px;
+      height: 240px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    /* TABLA */
+    .card-box {
+      background: var(--card-bg);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      background: linear-gradient(135deg, var(--portillo-navy) 0%, #0f2847 100%);
+      color: #fff;
+    }
+
+    .card-header h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      white-space: nowrap;
+    }
+
+    th {
+      background: #f8fafc;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    td {
+      padding: 12px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #fafbfc;
+    }
+
+    tbody tr:hover {
+      background-color: #f1f5f9;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .bg-peak {
+      background-color: #fffbeb !important;
+    }
+
+    .bg-peak:hover {
+      background-color: #fef3c7 !important;
+    }
+
+    .badge-snow {
+      background-color: #e0f2fe;
+      color: #0369a1;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .badge-high {
+      background-color: #fecaca;
+      color: #7f1d1d;
+    }
+
+    .badge-low {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+
+    .badge-road-open {
+      background-color: #dcfce7;
+      color: #166534;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge-road-closed {
+      background-color: #fee2e2;
+      color: #991b1b;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ANÁLISIS */
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 25px;
     }
 
     @media (max-width: 768px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
-      .chart-container {
-        height: 350px;
-      }
+      .analysis-grid { grid-template-columns: 1fr; }
+    }
+
+    .analysis-box {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .analysis-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .analysis-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--portillo-navy);
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .analysis-detail {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state p {
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
 
-  <div class="dashboard-container">
-    <!-- Header -->
-    <header>
-      <div class="header-title">
-        <h1><i class="fa-solid => fa-snowflake"></i> Ski Portillo - Monitor Nieve</h1>
-        <p>Reporte Oficial de Nivel de Nieve y Estado del Paso Los Libertadores</p>
+  <header>
+    <div class="header-container">
+      <div class="brand-logo">
+        <img src="https://skiportillo.com/wp-content/themes/ski-portillo-new/images/logo-top.svg" alt="Ski Portillo Logo">
       </div>
-      <span class="last-update" id="last-update">Actualizado: 27-07 • 07:00 hrs</span>
-    </header>
+      <div class="header-right">
+        <span class="last-update" id="last-update">Actualizado: 27-07 • 07:00 hrs</span>
+        <div class="header-btn">Reporte de Nieve</div>
+      </div>
+    </div>
+  </header>
 
-    <!-- Bar de Controles -->
-    <div class="controls-bar">
-      <div class="control-group">
-        <label for="date-start"><i class="fa-regular fa-calendar"></i> Desde:</label>
-        <input type="date" id="date-start" class="date-input" value="2026-07-11" min="2026-07-11" max="2026-07-27">
+  <div class="main-container">
+
+    <!-- Selector de Fechas -->
+    <div class="controls-card">
+      <div class="date-group">
+        <label for="date-start">Desde:</label>
+        <input type="date" id="date-start" class="date-input" value="2026-07-11">
       </div>
-      <div class="control-group">
-        <label for="date-end"><i class="fa-regular fa-calendar"></i> Hasta:</label>
-        <input type="date" id="date-end" class="date-input" value="2026-07-27" min="2026-07-11" max="2026-07-27">
+
+      <div class="date-group">
+        <label for="date-end">Hasta:</label>
+        <input type="date" id="date-end" class="date-input" value="2026-07-27">
       </div>
-      <button class="btn-reset" id="btn-reset"><i class="fa-solid fa-rotate-left"></i> Restablecer Fechas</button>
+
+      <button class="btn-reset" id="reset-dates-btn">Restablecer Fechas</button>
     </div>
 
-    <!-- KPIs -->
+    <div class="titles-sec">
+      <h1 class="page-title">Reporte de Nieve</h1>
+      <p class="page-subtitle">Monitoreo de nieve caída • Temporada 2026</p>
+    </div>
+
+    <!-- STATUS CARD -->
+    <div class="status-card good" id="status-card">
+      <div class="status-content">
+        <div class="status-main">
+          <h3 id="status-title">🏂 Condiciones: EXCELENTE</h3>
+          <p id="status-text">Última nevada: 0 cm (27-07). Acumulado en período: 602 cm.</p>
+        </div>
+        <div class="status-metrics">
+          <div class="status-metric">
+            <small>Mejor evento</small>
+            <strong id="status-best">165 cm</strong>
+          </div>
+          <div class="status-metric">
+            <small>Eventos grandes</small>
+            <strong id="status-events">3</strong>
+          </div>
+          <div class="status-metric">
+            <small>Promedio diario</small>
+            <strong id="status-avg">35.4 cm</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESTADO PASOS FRONTERIZOS -->
+    <div class="status-card" id="road-status-card" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">
+      <div class="status-content">
+        <div class="status-main">
+          <h3 id="road-title">🛣️ Paso Los Libertadores</h3>
+          <p id="road-text">Complejo fronterizo Los Libertadores - Región de Valparaíso</p>
+        </div>
+        <div class="status-metrics">
+          <div class="status-metric">
+            <small>Período abierto</small>
+            <strong id="road-open-days">4 días</strong>
+          </div>
+          <div class="status-metric">
+            <small>Período cerrado</small>
+            <strong id="road-closed-days">13 días</strong>
+          </div>
+          <div class="status-metric">
+            <small>Estado actual</small>
+            <strong id="road-current">Cerrado</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs Dinámicos -->
     <div class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-title">Nieve Caída (24 hrs)</div>
-        <div class="kpi-value" id="kpi-n24">0 cm</div>
-        <div class="kpi-subtext" id="kpi-n24-sub">Último reporte</div>
+        <div class="kpi-trend" id="trend-acumulada">↑</div>
+        <span class="kpi-title">Nieve Acumulada</span>
+        <div class="kpi-num"><span id="kpi-acumulada">602</span> <span class="kpi-unit">cm</span></div>
+        <canvas id="sparkline-acumulada" class="kpi-sparkline"></canvas>
+        <div id="kpi-foot-acumulada"></div>
       </div>
 
       <div class="kpi-card">
-        <div class="kpi-title">Nieve Últs. 7 Días</div>
-        <div class="kpi-value" id="kpi-n7">221 cm</div>
-        <div class="kpi-subtext">Acumulado móvil</div>
+        <div class="kpi-trend" id="trend-promedio">↑</div>
+        <span class="kpi-title">Promedio Diario</span>
+        <div class="kpi-num"><span id="kpi-promedio">35,4</span> <span class="kpi-unit">cm</span></div>
+        <canvas id="sparkline-promedio" class="kpi-sparkline"></canvas>
+        <div id="kpi-foot-promedio"></div>
       </div>
 
       <div class="kpi-card">
-        <div class="kpi-title">Nieve Acumulada Temporada</div>
-        <div class="kpi-value" id="kpi-acum">602 cm</div>
-        <div class="kpi-subtext">Total temporada a la fecha</div>
+        <div class="kpi-trend" id="trend-base">↑</div>
+        <span class="kpi-title">Nieve Base Hotel</span>
+        <div class="kpi-num"><span id="kpi-base">239</span> <span class="kpi-unit">cm</span></div>
+        <canvas id="sparkline-base" class="kpi-sparkline"></canvas>
+        <div id="kpi-foot-base"></div>
       </div>
 
       <div class="kpi-card">
-        <div class="kpi-title">Profundidad Nieve (Base)</div>
-        <div class="kpi-value" id="kpi-base">239 cm</div>
-        <div class="kpi-subtext" id="kpi-plateau-sub">Plateau: 270 cm</div>
+        <div class="kpi-trend" id="trend-max">→</div>
+        <span class="kpi-title">Máx. Evento 24h</span>
+        <div class="kpi-num"><span id="kpi-max">165</span> <span class="kpi-unit">cm</span></div>
+        <canvas id="sparkline-max" class="kpi-sparkline"></canvas>
+        <div id="kpi-foot-max"></div>
       </div>
+    </div>
 
-      <div class="kpi-card status-card closed" id="kpi-status-card">
-        <div class="kpi-title">Paso Los Libertadores</div>
-        <div style="margin-top: 5px;">
-          <span class="status-badge closed" id="kpi-road-badge">CERRADO</span>
+    <!-- GRÁFICOS -->
+    <div class="charts-grid">
+      <div class="chart-box">
+        <div class="chart-title">
+          <span class="chart-icon">📈</span>
+          Acumulado en el período
         </div>
-        <div class="kpi-subtext" id="kpi-road-details">Cerrado para todo tipo de vehículos</div>
+        <div class="chart-container">
+          <canvas id="chart-acumulada"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <div class="chart-title">
+          <span class="chart-icon">❄️</span>
+          Nieve caída por día
+        </div>
+        <div class="chart-container">
+          <canvas id="chart-daily"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <div class="chart-title">
+          <span class="chart-icon">🏔️</span>
+          Comparativa Plateau vs Base Hotel
+        </div>
+        <div class="chart-container">
+          <canvas id="chart-comparison"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <div class="chart-title">
+          <span class="chart-icon">🌡️</span>
+          Temperatura promedio por período
+        </div>
+        <div class="chart-container">
+          <canvas id="chart-temp"></canvas>
+        </div>
       </div>
     </div>
 
-    <!-- Chart Container -->
-    <div class="chart-container">
-      <canvas id="snowChart"></canvas>
+    <!-- ANÁLISIS CRUZADO -->
+    <div class="analysis-grid">
+      <div class="analysis-box">
+        <div class="analysis-label">📊 Días de nevada significativa</div>
+        <div class="analysis-value" id="analysis-significant">3</div>
+        <div class="analysis-detail">Eventos con ≥30 cm en 24h</div>
+      </div>
+
+      <div class="analysis-box">
+        <div class="analysis-label">🎯 Ratio Base / Plateau</div>
+        <div class="analysis-value" id="analysis-ratio">89%</div>
+        <div class="analysis-detail">Relación entre manto en altitud y hotel</div>
+      </div>
+
+      <div class="analysis-box">
+        <div class="analysis-label">❄️ Eficiencia de consolidación</div>
+        <div class="analysis-value" id="analysis-efficiency">19%</div>
+        <div class="analysis-detail">Nieve 24h vs 7 días</div>
+      </div>
+
+      <div class="analysis-box">
+        <div class="analysis-label">🌡️ Temperatura promedio</div>
+        <div class="analysis-value" id="analysis-temp">-1,5°C</div>
+        <div class="analysis-detail">Condiciones frías = mejor preservación</div>
+      </div>
     </div>
+
+    <!-- TABLA -->
+    <div class="card-box">
+      <div class="card-header">
+        <h2>Histórico Diario de Observaciones</h2>
+      </div>
+      <div class="table-responsive">
+        <table id="snow-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Día</th>
+              <th>Nieve 24h</th>
+              <th>Nieve 7D</th>
+              <th>Acumulado</th>
+              <th>Plateau</th>
+              <th>Base Hotel</th>
+              <th>Temp.</th>
+              <th>Paso Fronterizo</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- Renderizado por JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
+  <footer>
+    &copy; 2026 Ski Portillo Chile • Monitoreo de Nieve
+  </footer>
+
+  <!-- Script con Lógica Interactiva -->
   <script>
-    // Data maestra actualizada al 27 de julio de 2026
     const data = [
       { date: '2026-07-11', label: '11-07-2026', day: 'Sábado', n24: 10, n7: 10, acum: 62, plateau: 47, base: 27, temp: -1, roadStatus: 'open', roadDetails: 'Habilitado' },
       { date: '2026-07-12', label: '12-07-2026', day: 'Domingo', n24: 0, n7: 10, acum: 62, plateau: 47, base: 27, temp: 5, roadStatus: 'open', roadDetails: 'Habilitado' },
@@ -297,128 +785,302 @@
       { date: '2026-07-27', label: '27-07-2026', day: 'Lunes', n24: 0, n7: 221, acum: 602, plateau: 270, base: 239, temp: 1, roadStatus: 'closed', roadDetails: 'Cerrado para todo tipo de vehículos' }
     ];
 
-    // Elementos DOM
     const inputStart = document.getElementById('date-start');
     const inputEnd = document.getElementById('date-end');
-    const btnReset = document.getElementById('btn-reset');
+    const btnReset = document.getElementById('reset-dates-btn');
+    const tableBody = document.getElementById('table-body');
 
-    const kpiN24 = document.getElementById('kpi-n24');
-    const kpiN24Sub = document.getElementById('kpi-n24-sub');
-    const kpiN7 = document.getElementById('kpi-n7');
-    const kpiAcum = document.getElementById('kpi-acum');
-    const kpiBase = document.getElementById('kpi-base');
-    const kpiPlateauSub = document.getElementById('kpi-plateau-sub');
-    
-    const kpiStatusCard = document.getElementById('kpi-status-card');
-    const kpiRoadBadge = document.getElementById('kpi-road-badge');
-    const kpiRoadDetails = document.getElementById('kpi-road-details');
+    let chartAccumulada = null;
+    let chartDaily = null;
+    let chartComparison = null;
+    let chartTemp = null;
 
-    // Inicialización del Gráfico
-    const ctx = document.getElementById('snowChart').getContext('2d');
-    let snowChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: 'Nieve 24 hrs (cm)',
-            data: [],
-            backgroundColor: '#0f2b48',
-            borderRadius: 4,
-            order: 2
-          },
-          {
-            label: 'Nieve Acumulada (cm)',
-            data: [],
-            type: 'line',
-            borderColor: '#e6a100',
-            backgroundColor: 'rgba(230, 161, 0, 0.1)',
-            borderWidth: 3,
-            fill: true,
-            tension: 0.3,
-            yAxisID: 'y1',
-            order: 1
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-          mode: 'index',
-          intersect: false,
-        },
-        scales: {
-          x: {
-            grid: { display: false }
-          },
-          y: {
-            type: 'linear',
-            display: true,
-            position: 'left',
-            title: { display: true, text: 'Nieve 24h (cm)' },
-            beginAtZero: true
-          },
-          y1: {
-            type: 'linear',
-            display: true,
-            position: 'right',
-            title: { display: true, text: 'Acumulado (cm)' },
-            grid: { drawOnChartArea: false },
-            beginAtZero: true
-          }
-        },
-        plugins: {
-          legend: {
-            position: 'top',
-          },
-          tooltip: {
-            padding: 12
-          }
-        }
-      }
-    });
+    const sparklineCharts = {};
 
-    // Función de actualización
-    function updateDashboard() {
-      const startDate = inputStart.value;
-      const endDate = inputEnd.value;
-
-      // Filtrar data
-      const filteredData = data.filter(item => item.date >= startDate && item.date <= endDate);
-
-      if (filteredData.length === 0) return;
-
-      // Actualizar Gráfico
-      snowChart.data.labels = filteredData.map(item => `${item.day.slice(0,3)} ${item.label.slice(0,5)}`);
-      snowChart.data.datasets[0].data = filteredData.map(item => item.n24);
-      snowChart.data.datasets[1].data = filteredData.map(item => item.acum);
-      snowChart.update();
-
-      // Tomar el último registro del rango seleccionado para los KPIs
-      const lastRecord = filteredData[filteredData.length - 1];
-
-      kpiN24.textContent = `${lastRecord.n24} cm`;
-      kpiN24Sub.textContent = `Reporte del ${lastRecord.label}`;
-      kpiN7.textContent = `${lastRecord.n7} cm`;
-      kpiAcum.textContent = `${lastRecord.acum} cm`;
-      kpiBase.textContent = `${lastRecord.base} cm`;
-      kpiPlateauSub.textContent = `Plateau: ${lastRecord.plateau} cm`;
-
-      // Estado del Paso Fronterizo
-      if (lastRecord.roadStatus === 'closed') {
-        kpiStatusCard.className = 'kpi-card status-card closed';
-        kpiRoadBadge.className = 'status-badge closed';
-        kpiRoadBadge.textContent = 'CERRADO';
-      } else {
-        kpiStatusCard.className = 'kpi-card status-card open';
-        kpiRoadBadge.className = 'status-badge open';
-        kpiRoadBadge.textContent = 'HABILITADO';
-      }
-      kpiRoadDetails.textContent = lastRecord.roadDetails;
+    function getTempColor(temp) {
+      if (temp <= -4) return '#0369a1';
+      if (temp <= -2) return '#0ea5e9';
+      if (temp <= 0) return '#06b6d4';
+      if (temp <= 3) return '#f97316';
+      return '#ef4444';
     }
 
-    // Event Listeners
+    function calculateAnalysis(filtered) {
+      const significantDays = filtered.filter(d => d.n24 >= 30).length;
+      const lastRow = filtered[filtered.length - 1];
+      const ratio = ((lastRow.base / lastRow.plateau) * 100).toFixed(0);
+
+      const avgN24 = filtered.reduce((a, b) => a + b.n24, 0) / filtered.length;
+      const avgN7 = filtered.reduce((a, b) => a + b.n7, 0) / filtered.length;
+      const efficiency = ((avgN24 / avgN7) * 100).toFixed(0);
+
+      const avgTemp = (filtered.reduce((a, b) => a + b.temp, 0) / filtered.length).toFixed(1);
+
+      return { significantDays, ratio, efficiency, avgTemp };
+    }
+
+    function createSparkline(canvasId, values) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (sparklineCharts[canvasId]) {
+        sparklineCharts[canvasId].destroy();
+      }
+
+      canvas.width = canvas.offsetWidth;
+      canvas.height = 24;
+
+      const maxVal = Math.max(...values);
+      const minVal = Math.min(...values);
+
+      sparklineCharts[canvasId] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: values.map((_, i) => i),
+          datasets: [{
+            data: values,
+            borderColor: '#1b3d6d',
+            backgroundColor: 'rgba(27, 61, 109, 0.08)',
+            borderWidth: 1.5,
+            fill: true,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: false,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false }
+          },
+          scales: {
+            x: { display: false },
+            y: { display: false, min: minVal * 0.9, max: maxVal * 1.1 }
+          }
+        }
+      });
+    }
+
+    function updateMainCharts(filtered) {
+      const labels = filtered.map(d => d.label.substr(0, 5));
+      
+      // 1. Gráfico Acumulado
+      if (chartAccumulada) chartAccumulada.destroy();
+      chartAccumulada = new Chart(document.getElementById('chart-acumulada'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Acumulado (cm)',
+            data: filtered.map(d => d.acum),
+            borderColor: '#1b3d6d',
+            backgroundColor: 'rgba(27, 61, 109, 0.1)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      // 2. Gráfico Nieve Diaria
+      if (chartDaily) chartDaily.destroy();
+      chartDaily = new Chart(document.getElementById('chart-daily'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Nieve 24h (cm)',
+            data: filtered.map(d => d.n24),
+            backgroundColor: '#0369a1',
+            borderRadius: 4
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      // 3. Gráfico Comparativa Plateau vs Base
+      if (chartComparison) chartComparison.destroy();
+      chartComparison = new Chart(document.getElementById('chart-comparison'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Plateau', data: filtered.map(d => d.plateau), borderColor: '#0b1d3a', tension: 0.2 },
+            { label: 'Base Hotel', data: filtered.map(d => d.base), borderColor: '#f8ad1d', tension: 0.2 }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      // 4. Gráfico Temperatura
+      if (chartTemp) chartTemp.destroy();
+      chartTemp = new Chart(document.getElementById('chart-temp'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Temp (°C)',
+            data: filtered.map(d => d.temp),
+            borderColor: '#ef4444',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+
+    function updateStatusCard(filtered) {
+      const lastRow = filtered[filtered.length - 1];
+      const max24 = Math.max(...filtered.map(item => item.n24));
+
+      let status = 'EXCELENTE';
+      let statusClass = 'good';
+      let emoji = '🏂';
+
+      if (lastRow.acum < 200) {
+        status = 'MODERADO';
+        statusClass = 'warning';
+        emoji = '⚠️';
+      } else if (lastRow.acum < 100) {
+        status = 'BAJO';
+        statusClass = 'alert';
+        emoji = '❌';
+      }
+
+      document.getElementById('status-card').className = `status-card ${statusClass}`;
+      document.getElementById('status-title').innerHTML = `${emoji} Condiciones: ${status}`;
+      document.getElementById('status-text').innerHTML = `Última nevada: <strong>${lastRow.n24} cm</strong> (${lastRow.label.substr(0, 5)}). Acumulado en período: <strong>${lastRow.acum} cm</strong>. Manto de nieve en hotel: <strong>${lastRow.base} cm</strong>.`;
+    }
+
+    function updateDashboard() {
+      const start = inputStart.value;
+      const end = inputEnd.value;
+
+      const filtered = data.filter(item => item.date >= start && item.date <= end);
+
+      if (filtered.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><p>No hay datos para las fechas seleccionadas.</p></div></td></tr>`;
+        document.getElementById('kpi-acumulada').innerText = '0';
+        document.getElementById('kpi-promedio').innerText = '0';
+        document.getElementById('kpi-base').innerText = '0';
+        document.getElementById('kpi-max').innerText = '0';
+        return;
+      }
+
+      // ===== TABLA =====
+      tableBody.innerHTML = '';
+      filtered.forEach(row => {
+        const tr = document.createElement('tr');
+        if (row.peak) tr.classList.add('bg-peak');
+
+        let badge24 = row.n24 >= 50 ? 
+          `<span class="badge-snow badge-high">${row.n24} cm</span>` : 
+          row.n24 >= 30 ? 
+          `<span class="badge-snow">${row.n24} cm</span>` :
+          `<span class="badge-snow badge-low">${row.n24} cm</span>`;
+
+        const roadBadge = row.roadStatus === 'open' ?
+          `<span class="badge-road-open">✅ Abierto</span>` :
+          `<span class="badge-road-closed">⛔ Cerrado</span>`;
+
+        tr.innerHTML = `
+          <td><strong>${row.label}</strong></td>
+          <td>${row.day}</td>
+          <td>${badge24}</td>
+          <td>${row.n7} cm</td>
+          <td>${row.acum} cm</td>
+          <td>${row.plateau} cm</td>
+          <td>${row.base} cm</td>
+          <td style="color: ${getTempColor(row.temp)}; font-weight: 600;">${row.temp} °C</td>
+          <td>${roadBadge}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+
+      // ===== KPIs =====
+      const sum24 = filtered.reduce((acc, curr) => acc + curr.n24, 0);
+      const avg24 = (sum24 / filtered.length).toFixed(1).replace('.', ',');
+      const lastRow = filtered[filtered.length - 1];
+      const max24 = Math.max(...filtered.map(item => item.n24));
+
+      document.getElementById('kpi-acumulada').innerText = lastRow.acum;
+      document.getElementById('kpi-promedio').innerText = avg24;
+      document.getElementById('kpi-base').innerText = lastRow.base;
+      document.getElementById('kpi-max').innerText = max24;
+
+      // ===== FOOTERS KPI =====
+      document.getElementById('kpi-foot-acumulada').innerHTML = `
+        <span class="kpi-foot">Total período</span>
+        ${filtered.length >= 7 ? `<span class="kpi-badge good">↑ ${((lastRow.acum / 62) * 100).toFixed(0)}% vs inicio</span>` : ''}
+      `;
+
+      document.getElementById('kpi-foot-promedio').innerHTML = `
+        <span class="kpi-foot">${filtered.length} días registrados</span>
+        ${avg24 > 30 ? `<span class="kpi-badge good">Arriba del promedio</span>` : ''}
+      `;
+
+      document.getElementById('kpi-foot-base').innerHTML = `
+        <span class="kpi-foot">Manto en hotel</span>
+        ${lastRow.base >= 250 ? `<span class="kpi-badge good">Excelente</span>` : `<span class="kpi-badge warn">${lastRow.base < 200 ? 'Revisar' : 'Normal'}</span>`}
+      `;
+
+      document.getElementById('kpi-foot-max').innerHTML = `
+        <span class="kpi-foot">Mayor evento</span>
+        ${max24 >= 100 ? `<span class="kpi-badge good">Histórico</span>` : ''}
+      `;
+
+      // ===== TRENDS =====
+      const firstRow = filtered[0];
+      const acumChange = lastRow.acum - firstRow.acum;
+      const baseChange = lastRow.base - firstRow.base;
+      const maxIsLatest = max24 === lastRow.n24;
+
+      document.getElementById('trend-acumulada').innerHTML = acumChange > 0 ? '↑' : '→';
+      document.getElementById('trend-acumulada').className = `kpi-trend ${acumChange > 0 ? 'up' : 'flat'}`;
+
+      document.getElementById('trend-promedio').className = `kpi-trend ${avg24 > 30 ? 'up' : 'flat'}`;
+
+      document.getElementById('trend-base').innerHTML = baseChange > 0 ? '↑' : baseChange < 0 ? '↓' : '→';
+      document.getElementById('trend-base').className = `kpi-trend ${baseChange > 0 ? 'up' : baseChange < 0 ? 'down' : 'flat'}`;
+
+      document.getElementById('trend-max').className = `kpi-trend ${maxIsLatest ? 'up' : 'flat'}`;
+
+      // ===== SPARKLINES =====
+      createSparkline('sparkline-acumulada', filtered.map(d => d.acum));
+      createSparkline('sparkline-promedio', filtered.map(d => d.n24));
+      createSparkline('sparkline-base', filtered.map(d => d.base));
+      createSparkline('sparkline-max', filtered.map(d => d.n24));
+
+      // ===== GRÁFICOS Y CARDS =====
+      updateMainCharts(filtered);
+      updateStatusCard(filtered);
+
+      // ===== ANÁLISIS =====
+      const analysis = calculateAnalysis(filtered);
+      document.getElementById('analysis-significant').innerText = analysis.significantDays;
+      document.getElementById('analysis-ratio').innerText = analysis.ratio + '%';
+      document.getElementById('analysis-efficiency').innerText = analysis.efficiency + '%';
+      document.getElementById('analysis-temp').innerText = analysis.avgTemp.replace('.', ',') + '°C';
+
+      // Status metrics
+      document.getElementById('status-best').innerText = max24 + ' cm';
+      document.getElementById('status-events').innerText = filtered.filter(d => d.n24 >= 30).length;
+      document.getElementById('status-avg').innerText = avg24 + ' cm';
+
+      // Road metrics
+      const openDays = filtered.filter(d => d.roadStatus === 'open').length;
+      const closedDays = filtered.filter(d => d.roadStatus === 'closed').length;
+      document.getElementById('road-open-days').innerText = `${openDays} días`;
+      document.getElementById('road-closed-days').innerText = `${closedDays} días`;
+      document.getElementById('road-current').innerText = lastRow.roadStatus === 'open' ? 'Abierto' : 'Cerrado';
+    }
+
+    // ===== EVENT LISTENERS & INICIALIZACIÓN =====
     inputStart.addEventListener('change', updateDashboard);
     inputEnd.addEventListener('change', updateDashboard);
 
@@ -428,8 +1090,7 @@
       updateDashboard();
     });
 
-    // Carga inicial
-    updateDashboard();
+    document.addEventListener('DOMContentLoaded', updateDashboard);
   </script>
 </body>
 </html>
