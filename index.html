@@ -744,19 +744,31 @@
 
     const sparklineCharts = {};
 
-    // Helper para formatear fechas limpias (YYYY-MM-DD y DD/MM/YYYY)
-    function parseDateString(rawDateStr) {
-      const d = new Date(rawDateStr);
-      if (isNaN(d.getTime())) return { dateStr: rawDateStr, displayStr: rawDateStr };
+    // Extraer limpia la fecha sin desfasar por zona horaria
+    function parseCleanDate(rawVal) {
+      if (!rawVal) return { cleanISO: "", displayStr: "" };
 
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
+      // Si viene como string ISO/Fecha
+      let str = String(rawVal);
+      let match = str.match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+      
+      if (match) {
+        let y = match[1];
+        let m = match[2].padStart(2, '0');
+        let d = match[3].padStart(2, '0');
+        return { cleanISO: `${y}-${m}-${d}`, displayStr: `${d}/${m}/${y}` };
+      }
 
-      return {
-        dateStr: `${year}-${month}-${day}`,
-        displayStr: `${day}/${month}/${year}`
-      };
+      // Si viene como objeto Date JS
+      let dateObj = new Date(rawVal);
+      if (!isNaN(dateObj.getTime())) {
+        let y = dateObj.getFullYear();
+        let m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        let d = String(dateObj.getDate()).padStart(2, '0');
+        return { cleanISO: `${y}-${m}-${d}`, displayStr: `${d}/${m}/${y}` };
+      }
+
+      return { cleanISO: str, displayStr: str };
     }
 
     function getTempColor(temp) {
@@ -772,13 +784,13 @@
         const response = await fetch(GOOGLE_SHEET_API_URL);
         let rawData = await response.json();
         
-        // 1. Procesar y limpiar fechas + valores numéricos
+        // 1. Limpieza estricta de datos
         data = rawData.map(item => {
-          const parsedDate = parseDateString(item.date || item.label);
+          const parsed = parseCleanDate(item.date || item.label);
           return {
             ...item,
-            date: parsedDate.dateStr,
-            displayLabel: parsedDate.displayStr,
+            dateISO: parsed.cleanISO,
+            displayLabel: parsed.displayStr,
             n24: Number(item.n24) || 0,
             n7: Number(item.n7) || 0,
             acum: Number(item.acum) || 0,
@@ -787,21 +799,21 @@
             temp: Number(item.temp) || 0,
             peak: (Number(item.n24) || 0) >= 30
           };
-        });
+        }).filter(item => item.dateISO !== "");
 
         // 2. Ordenar cronológicamente (Del más antiguo al más reciente)
-        data.sort((a, b) => new Date(a.date) - new Date(b.date));
+        data.sort((a, b) => a.dateISO.localeCompare(b.dateISO));
 
-        // 3. Configurar rango de fechas inicial cubriendo TODO el historial
+        // 3. Seleccionar todo el rango
         if (data.length > 0) {
-          inputStart.value = data[0].date;
-          inputEnd.value = data[data.length - 1].date;
+          inputStart.value = data[0].dateISO;
+          inputEnd.value = data[data.length - 1].dateISO;
           
           const lastItem = data[data.length - 1];
           document.getElementById('last-update').innerText = `Actualizado: ${lastItem.displayLabel} • 07:00 hrs`;
         }
         
-        // 4. Cargar la vista automáticamente con todo el período seleccionado
+        // 4. Cargar la vista
         updateDashboard();
 
       } catch (error) {
@@ -959,10 +971,10 @@
       const start = inputStart.value;
       const end = inputEnd.value;
 
-      // Filtrado flexible por rango de fechas
+      // Filtrado exacto por string YYYY-MM-DD
       const filtered = data.filter(item => {
         if (!start || !end) return true;
-        return item.date >= start && item.date <= end;
+        return item.dateISO >= start && item.dateISO <= end;
       });
 
       if (filtered.length === 0) {
@@ -1073,8 +1085,8 @@
 
     btnReset.addEventListener('click', () => {
       if (data.length > 0) {
-        inputStart.value = data[0].date;
-        inputEnd.value = data[data.length - 1].date;
+        inputStart.value = data[0].dateISO;
+        inputEnd.value = data[data.length - 1].dateISO;
         updateDashboard();
       }
     });
